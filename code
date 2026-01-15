@@ -1,0 +1,131 @@
+#include <stdio.h>
+#include <string.h>
+
+#define MAX_MHS 30
+
+long long faktorial(int n) {
+    if (n <= 1) return 1;
+    return n * faktorial(n - 1);
+}
+
+int fibonacci(int n) {
+    if (n <= 0) return 0;
+    if (n == 1) return 1;
+    return fibonacci(n - 1) + fibonacci(n - 2);
+}
+
+void tampilkanData(int n, char nim[][15], float nilai[][3]) {
+    printf("\n--- DATA MAHASISWA ---\n");
+    printf("No\tNIM\t\tTugas\tUTS\tUAS\n");
+    for (int i = 0; i < n; i++) {
+        printf("%d\t%s\t%.2f\t%.2f\t%.2f\n", i + 1, nim[i], nilai[i][0], nilai[i][1], nilai[i][2]);
+    }
+}
+
+int main() {
+    char nim[MAX_MHS][15];
+    float nilai[MAX_MHS][3]; // Kolom: 0=Tugas, 1=UTS, 2=UAS
+    int n = 0, pilihan;
+
+    printf("Masukkan jumlah mahasiswa awal (maks %d): ", MAX_MHS);
+    scanf("%d", &n);
+
+    for (int i = 0; i < n; i++) {
+        printf("Data Mahasiswa ke-%d\n", i + 1);
+        printf("NIM: "); scanf("%s", nim[i]);
+        printf("Nilai Tugas: "); scanf("%f", &nilai[i][0]);
+        printf("Nilai UTS: "); scanf("%f", &nilai[i][1]);
+        printf("Nilai UAS: "); scanf("%f", &nilai[i][2]);
+    }
+
+    do {
+        printf("\n=== MENU PROGRAM ===");
+        printf("\n1. Tampilkan Seluruh Data");
+        printf("\n2. Tambah Data Mahasiswa");
+        printf("\n3. Ubah Nilai Mahasiswa");
+        printf("\n4. Hapus Data Mahasiswa");
+        printf("\n5. Hitung & Tampilkan Pengolahan Nilai");
+        printf("\n6. Fitur Rekursif");
+        printf("\n7. Keluar");
+        printf("\nPilih menu: ");
+        scanf("%d", &pilihan);
+
+        switch (pilihan) {
+            case 1:
+                tampilkanData(n, nim, nilai);
+                break;
+            case 2:
+                if (n < MAX_MHS) {
+                    printf("NIM: "); scanf("%s", nim[n]);
+                    printf("Nilai Tugas: "); scanf("%f", &nilai[n][0]);
+                    printf("Nilai UTS: "); scanf("%f", &nilai[n][1]);
+                    printf("Nilai UAS: "); scanf("%f", &nilai[n][2]);
+                    n++;
+                } else {
+                    printf("Kapasitas penuh!\n");
+                }
+                break;
+            case 3: {
+                char cariNim[15];
+                printf("Masukkan NIM yang akan diubah: "); scanf("%s", cariNim);
+                for (int i = 0; i < n; i++) {
+                    if (strcmp(nim[i], cariNim) == 0) {
+                        printf("Nilai Tugas Baru: "); scanf("%f", &nilai[i][0]);
+                        printf("Nilai UTS Baru: "); scanf("%f", &nilai[i][1]);
+                        printf("Nilai UAS Baru: "); scanf("%f", &nilai[i][2]);
+                        break;
+                    }
+                }
+                break;
+            }
+            case 4: {
+                char hapusNim[15];
+                printf("Masukkan NIM yang akan dihapus: "); scanf("%s", hapusNim);
+                for (int i = 0; i < n; i++) {
+                    if (strcmp(nim[i], hapusNim) == 0) {
+                        for (int j = i; j < n - 1; j++) {
+                            strcpy(nim[j], nim[j+1]);
+                            nilai[j][0] = nilai[j+1][0];
+                            nilai[j][1] = nilai[j+1][1];
+                            nilai[j][2] = nilai[j+1][2];
+                        }
+                        n--;
+                        printf("Data berhasil dihapus.\n");
+                        break;
+                    }
+                }
+                break;
+            }
+            case 5: {
+                float rataMhs, rataTugas = 0, rataUTS = 0, rataUAS = 0;
+                int idxTinggi = 0, idxRendah = 0;
+                float maxRata = -1, minRata = 101;
+
+                printf("\n--- PENGOLAHAN NILAI ---\n");
+                for (int i = 0; i < n; i++) {
+                    rataMhs = (nilai[i][0] + nilai[i][1] + nilai[i][2]) / 3;
+                    printf("Rata-rata NIM %s: %.2f\n", nim[i], rataMhs);
+
+                    rataTugas += nilai[i][0];
+                    rataUTS += nilai[i][1];
+                    rataUAS += nilai[i][2];
+
+                    if (rataMhs > maxRata) { maxRata = rataMhs; idxTinggi = i; }
+                    if (rataMhs < minRata) { minRata = rataMhs; idxRendah = i; }
+                }
+                printf("\nRata-rata Kelas - Tugas: %.2f, UTS: %.2f, UAS: %.2f\n", rataTugas/n, rataUTS/n, rataUAS/n);
+                printf("Rata-rata Tertinggi: %s (%.2f)\n", nim[idxTinggi], maxRata);
+                printf("Rata-rata Terendah: %s (%.2f)\n", nim[idxRendah], minRata);
+                break;
+            }
+            case 6:
+                printf("Faktorial dari %d: %lld\n", n, faktorial(n));
+                printf("Deret Fibonacci (%d bilangan): ", n);
+                for (int i = 0; i < n; i++) printf("%d ", fibonacci(i));
+                printf("\n");
+                break;
+        }
+    } while (pilihan != 7);
+
+    return 0;
+}
